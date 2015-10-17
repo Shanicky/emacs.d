@@ -40,3 +40,8 @@ site-lisp/package/
 /ido.last
 /recentf
 /viper
+projectile-bookmarks.*
+projectile.*
+/semanticdb
+/irony
+/anaconda-mode
