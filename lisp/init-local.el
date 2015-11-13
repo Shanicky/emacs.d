@@ -21,7 +21,9 @@
   '(custom-set-variables
     '(flycheck-display-errors-function #'flycheck-pos-tip-error-messages)))
 
+
 ;; ----------------- common ----------------------------
+(setq-default dotspacemacs-configuration-layers '(osx))
 (global-subword-mode t)
 (global-hl-line-mode t)                              ;; highlight current line
 (auto-image-file-mode t)
@@ -82,12 +84,19 @@
 
 
 ;; ----------------- appearance ----------------------------
-;;(require-package 'sublime-themes)
-;;(require 'sublime-themes)
+(require-package 'sublime-themes)
+(require 'sublime-themes)
 
 ;; gotham theme
 (require-package 'gotham-theme)
 (load-theme 'gotham t)
+;;(load-theme 'brin t)
+;; (custom-theme-set-variables
+;;  'brin
+;;  '(linum-format " %i ")
+;;  )
+
+
 
 ;; smart mode line
 (require-package 'smart-mode-line)
@@ -305,9 +314,11 @@
   (local-set-key (kbd "C-c i") 'semantic-analyze-proto-impl-toggle)
   (local-set-key (kbd "C-c u") 'senator-go-to-up-reference)
   (local-set-key (kbd "C-c r") 'semantic-symref-symbol)
-  (local-set-key (kbd "C-c R") 'semantic-symref))
+  (local-set-key (kbd "C-c R") 'semantic-symref)
+  (local-set-key [(f9)] 'smart-compile))
 
-(add-hook 'c-mode-common-hook 'my-c-common-mode)
+(add-hook 'c-mode-hook 'my-c-common-mode)
+(add-hook 'c++-mode-hook 'my-c-common-mode)
 
 (defun my-c-mode ()
   (setq flycheck-clang-language-standard "c99"))
@@ -439,6 +450,11 @@
 (add-hook 'ruby-mode-hook 'my-ruby-mode)
 (add-hook 'ruby-mode-hook 'ruby-block-mode)
 (add-hook 'ruby-mode-hook 'ruby-electric-mode)
+
+(setq-default flycheck-disabled-checkers
+              (append flycheck-disabled-checkers
+                      '(ruby-rubylint)))
+
 ;;(add-hook 'ruby-mode-hook 'projectile-on)
 
                                         ;(push 'company-robe company-backends)
@@ -568,4 +584,18 @@ completion menu. This workaround stops that annoying behavior."
 (global-set-key (kbd "C-c C-P") 'md/duplicate-up)
 
 
+;; ----------------- funny ----------------------------
+(require-package 'eredis)
+
+
+
+
+(autoload 'dot-mode "dot-mode" nil t) ; vi `.' command emulation
+(global-set-key [(control ?.)] (lambda () (interactive) (dot-mode 1)
+                                 (message "Dot mode activated.")))
+
+                                        ; (require-package 'dot-mode)
+                                        ;(add-hook 'find-file-hooks 'dot-mode-on)
+
+;;(flycheck-disable-checker 'ruby-rubylint)
 (provide 'init-local)
