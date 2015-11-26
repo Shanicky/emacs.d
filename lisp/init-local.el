@@ -408,11 +408,12 @@
     (local-set-key (kbd "C-c f") 'gofmt)
     (local-set-key (kbd "C-c e") 'go-errcheck)
     (local-set-key (kbd "C-c r") 'go-run)
+    (local-set-key (kbd "C-c c") 'smart-compile)
     (local-set-key (kbd "C-c C-d") 'godoc-at-point)
     (local-set-key (kbd "C-c C-j") 'go-direx-pop-to-buffer)
     (local-set-key [(f4)] 'previous-error)
     (local-set-key [(f5)] 'next-error)
-    (local-set-key [(f9)] 'smart-compile)
+
     )
   )
 
