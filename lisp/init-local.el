@@ -90,12 +90,14 @@
 ;; gotham theme
 (require-package 'gotham-theme)
 (load-theme 'gotham t)
+
+(require-package 'spacemacs-theme)
+;(load-theme 'spacemacs-dark)
 ;;(load-theme 'brin t)
 ;; (custom-theme-set-variables
 ;;  'brin
 ;;  '(linum-format " %i ")
 ;;  )
-
 
 
 ;; smart mode line
@@ -129,7 +131,12 @@
 
 
 ;; font
-(set-default-font "Terminus 15")
+;;(set-default-font "Terminus 15")
+;;(set-default-font "Aurulent Sans Mono 13")
+;;(set-default-font "FreeMono 15")
+;;(set-default-font "Hasklig 13")
+;;(set-default-font "Hasklig 13")
+(set-default-font "Sayo UV Console HG 15")
 
 ;; popwin
 (require-package 'popwin)
@@ -408,7 +415,7 @@
     (local-set-key (kbd "C-c f") 'gofmt)
     (local-set-key (kbd "C-c e") 'go-errcheck)
     (local-set-key (kbd "C-c r") 'go-run)
-    (local-set-key (kbd "C-c c") 'smart-compile)
+    (local-set-key (kbd "C-c C-c") 'smart-compile)
     (local-set-key (kbd "C-c C-d") 'godoc-at-point)
     (local-set-key (kbd "C-c C-j") 'go-direx-pop-to-buffer)
     (local-set-key [(f4)] 'previous-error)
@@ -599,4 +606,5 @@ completion menu. This workaround stops that annoying behavior."
                                         ;(add-hook 'find-file-hooks 'dot-mode-on)
 
 ;;(flycheck-disable-checker 'ruby-rubylint)
+(add-to-list 'completion-styles 'initials t)
 (provide 'init-local)
