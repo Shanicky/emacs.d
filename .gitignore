@@ -45,3 +45,5 @@ projectile.*
 /semanticdb
 /irony
 /anaconda-mode
+/binary
+srecode-map.el

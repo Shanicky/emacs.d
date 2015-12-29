@@ -22,6 +22,28 @@
     '(flycheck-display-errors-function #'flycheck-pos-tip-error-messages)))
 
 
+
+;; ----------------- ggtags ----------------------------
+
+;; export GTAGSLIBPATH=$HOME/.gtags/
+;; # Create a directory for holding database, since
+;; # you cannot create a database in your system paths
+;; mkdir ~/.gtags
+
+;; # Create symbolic links to your external libraries
+;; ln -s /usr/include usr-include
+;; ln -s /usr/local/include/ usr-local-include
+
+;; # Generate GNU Global database
+;; gtags -c
+
+
+(require-package 'ggtags)
+(add-hook 'prog-mode-hook
+          (lambda ()
+            (ggtags-mode t)))
+
+
 ;; ----------------- common ----------------------------
 (setq-default dotspacemacs-configuration-layers '(osx))
 (global-subword-mode t)
@@ -92,7 +114,7 @@
 (load-theme 'gotham t)
 
 (require-package 'spacemacs-theme)
-;(load-theme 'spacemacs-dark)
+                                        ;(load-theme 'spacemacs-dark)
 ;;(load-theme 'brin t)
 ;; (custom-theme-set-variables
 ;;  'brin
@@ -203,7 +225,9 @@
             (require 'dtrt-indent)
             (dtrt-indent-mode t)))
 
-(require 'cedet)
+;;(require 'cedet)
+(load-file "~/.emacs.d/binary/cedet/cedet-devel-load.el")
+(load-file "~/.emacs.d/binary/cedet/contrib/cedet-contrib-load.el")
 
 ;; ----------------- cpp ----------------------------
 
@@ -224,11 +248,24 @@
 (add-hook 'irony-mode-hook 'my-irony-mode-hook)
 (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
 
+;;"-lglog" "-lfolly"
+(setq irony-lang-compile-option-alist
+      '((c++-mode . ("c++" "-std=c++11" "-lstdc++" "-lm" "-I/usr/local/include/" "-L/usr/local/lib"))
+        (c-mode . ("c" "-std=c99" "-lm" "-I/usr/local/include/" "-L/usr/local/lib"))
+        (objc-mode . '("objective-c"))))
+
+(defun irony--lang-compile-option ()
+  (irony--awhen (cdr-safe (assq major-mode irony-lang-compile-option-alist))
+    (append '("-x") it)))
+
 (require-package 'company-irony)
 (require 'company-irony)
 
 (eval-after-load 'company
   '(add-to-list 'company-backends 'company-irony))
+
+(eval-after-load 'company
+  '(add-to-list 'company-backends 'company-capf))
 
 (require-package 'company-irony-c-headers)
 (require 'company-irony-c-headers)
@@ -261,22 +298,30 @@
                  "../src")
            (get-include-dirs)))
 
+(defun get-all-include-dirs ()
+  (append  (list "/usr/local/include")
+           (get-project-include-dirs)))
+
+
 
 (require 'eassist)
+(require 'semantic)
 (require 'semantic-c nil 'noerror)
-(require 'semantic/bovine/c nil 'noerror)
+;;(require 'semantic/bovine/c nil 'noerror)
 
 (add-hook 'semantic-init-hooks (lambda ()
                                  (imenu-add-to-menubar "TAGS")))
 
 
+
 (defconst cedet-user-include-dirs
-  (list ".." "../include" "../inc" "../common" "../public"
+  (list "." ".." "../include" "../inc" "../common" "../public" "/usr/local/include"
         "../.." "../../include" "../src" "../../inc" "../../common" "../../public"))
 
-
 (defun my-c-common-mode()
-  (setq flycheck-clang-include-path (get-project-include-dirs))
+  (setq flycheck-clang-include-path (get-all-include-dirs))
+  (setq-local imenu-create-index-function #'ggtags-build-imenu-index)
+  (exec-path-from-shell-copy-env "GTAGSLIBPATH")
   (semantic-mode t)
   (let ((include-dirs cedet-user-include-dirs))
     (mapc (lambda (dir)
@@ -310,18 +355,25 @@
   ;;(global-semantic-show-unmatched-syntax-mode t)
   (global-semantic-show-parser-state-mode t)
 
-  (local-set-key (kbd "C-c g") 'semantic-ia-fast-jump)
-  (local-set-key (kbd "C-c d") 'semantic-ia-show-doc)
-  (local-set-key (kbd "C-c D") 'semantic-ia-describe-class)
+  (local-set-key (kbd "C-c g") 'ggtags-find-tag-dwim)
+  (local-set-key (kbd "C-c G") 'semantic-ia-fast-jump)
+  (local-set-key (kbd "C-c b") 'pop-tag-mark)
+  (local-set-key (kbd "C-c B") 'semantic-ia-fast-jump-back)
+
+  (local-set-key (kbd "C-c d") 'ggtags-show-definition)
+  (local-set-key (kbd "C-c D") 'semantic-ia-show-doc)
+  (local-set-key (kbd "C-c r") 'ggtags-find-reference)
+  (local-set-key (kbd "C-c R") 'semantic-symref-symbol)
+
+  ;;  (local-set-key (kbd "C-c D") 'semantic-ia-describe-class)
   (local-set-key (kbd "C-c s") 'semantic-ia-show-summary)
   (local-set-key (kbd "C-c c") 'eassist-switch-h-cpp)
-  (local-set-key (kbd "C-c b") 'semantic-ia-fast-jump-back)
-  (local-set-key (kbd "C-c B") 'semantic-mrub-switch-tags)
+
+  ;;(local-set-key (kbd "C-c B") 'semantic-mrub-switch-tags)
   (local-set-key (kbd "C-c m") 'eassist-list-methods)
   (local-set-key (kbd "C-c i") 'semantic-analyze-proto-impl-toggle)
   (local-set-key (kbd "C-c u") 'senator-go-to-up-reference)
-  (local-set-key (kbd "C-c r") 'semantic-symref-symbol)
-  (local-set-key (kbd "C-c R") 'semantic-symref)
+                                        ;  (local-set-key (kbd "C-c R") 'semantic-symref)
   (local-set-key [(f9)] 'smart-compile))
 
 (add-hook 'c-mode-hook 'my-c-common-mode)
@@ -445,15 +497,18 @@
   (rvm-activate-corresponding-ruby)
   (local-set-key (kbd "C-c i") 'inf-ruby)
   (local-set-key (kbd "C-c a") 'rvm-activate-corresponding-ruby)
-  (local-set-key (kbd "C-c g") 'robe-jump)
-  (local-set-key (kbd "C-c d") 'robe-doc)
+  (local-set-key (kbd "C-c g") 'ggtags-find-tag-dwim)
+  (local-set-key (kbd "C-c b") 'pop-tag-mark)
+  ;; (local-set-key (kbd "C-c g") 'robe-jump)
+  ;;  (local-set-key (kbd "C-c d") 'robe-doc)
+  (local-set-key (kbd "C-c d") 'ggtags-show-definition)
   (local-set-key (kbd "C-c r") 'ruby-compilation-this-buffer)
   )
 
-(eval-after-load 'company
-  '(add-to-list 'company-backends '(company-robe)))
+;; (eval-after-load 'company
+;;   '(add-to-list 'company-backends '(company-robe)))
 
-(add-hook 'ruby-mode-hook 'robe-mode)
+;;(add-hook 'ruby-mode-hook 'robe-mode)
 (add-hook 'ruby-mode-hook 'ruby-tools-mode)
 (add-hook 'ruby-mode-hook 'my-ruby-mode)
 (add-hook 'ruby-mode-hook 'ruby-block-mode)
@@ -519,7 +574,7 @@
                            (file-name-nondirectory buffer-file-name))
                           " "
                           (file-name-nondirectory buffer-file-name)
-                          " -g -std=c99 -pedantic -pthread -lm "))
+                          " -g -std=c99 -pedantic -pthread -lm -I/usr/local/include -L/usr/local/lib"))
           (if (eq major-mode 'c++-mode)
               (setq command
                     (concat "clang++ -Wall -o "
@@ -527,7 +582,7 @@
                              (file-name-nondirectory buffer-file-name))
                             " "
                             (file-name-nondirectory buffer-file-name)
-                            " -g -std=c++11 -pedantic -pthread -lm "))
+                            " -g -std=c++11 -pedantic -pthread -lm -I/usr/local/include -L/usr/local/lib "))
             (if (eq major-mode 'go-mode)
                 (setq command "colorgo build -v")
               (message "Unknow mode, won't compile!"))))))
@@ -591,12 +646,22 @@ completion menu. This workaround stops that annoying behavior."
 (global-set-key (kbd "C-c C-p") 'md/duplicate-down)
 (global-set-key (kbd "C-c C-P") 'md/duplicate-up)
 
+(defun remove-ggtags-keybindings-hook ()
+  (define-key ggtags-mode-map (kbd "M-<") nil)
+  (define-key ggtags-mode-map (kbd "M->") nil)
+  (global-set-key (kbd "M-<") 'beginning-of-buffer)
+  (global-set-key (kbd "M->") 'end-of-buffer)
+  )
+
+(add-hook 'ggtags-mode-hook 'remove-ggtags-keybindings-hook)
+
+(eval-after-load 'ggtags
+  `(remove-ggtags-keybindings-hook)
+  )
+
 
 ;; ----------------- funny ----------------------------
 (require-package 'eredis)
-
-
-
 
 (autoload 'dot-mode "dot-mode" nil t) ; vi `.' command emulation
 (global-set-key [(control ?.)] (lambda () (interactive) (dot-mode 1)
