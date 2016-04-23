@@ -8,5 +8,4 @@
     (add-hook 'clojure-mode-hook 'sanityinc/lisp-setup)
     (add-hook 'clojure-mode-hook 'subword-mode)))
 
-
 (provide 'init-clojure)
