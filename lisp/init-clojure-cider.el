@@ -1,6 +1,7 @@
 (require 'init-clojure)
 
 (when (maybe-require-package 'cider)
+<<<<<<< HEAD
   ;;  (require-package 'ac-cider)
 
   (setq nrepl-popup-stacktraces nil)
@@ -19,6 +20,8 @@
     (add-hook 'cider-repl-mode-hook 'subword-mode)
     (add-hook 'cider-repl-mode-hook 'paredit-mode)
     ;;    (define-key cider-mode-map (kbd "C-c C-d") 'ac-cider-popup-doc)
+
+    (add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
 
     ;; nrepl isn't based on comint
     (add-hook 'cider-repl-mode-hook

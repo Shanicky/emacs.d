@@ -23,7 +23,7 @@
       (eval-region (min (point) (mark)) (max (point) (mark)))
     (pp-eval-last-sexp prefix)))
 
-(global-set-key (kbd "M-:") 'pp-eval-expression)
+(global-set-key [remap eval-expression] 'pp-eval-expression)
 
 (after-load 'lisp-mode
   (define-key emacs-lisp-mode-map (kbd "C-x C-e") 'sanityinc/eval-last-sexp-or-region))
@@ -173,8 +173,7 @@
 
 (defun sanityinc/emacs-lisp-setup ()
   "Enable features useful when working with elisp."
-  (set-up-hippie-expand-for-elisp)
-  (ac-emacs-lisp-mode-setup))
+  (set-up-hippie-expand-for-elisp))
 
 (defconst sanityinc/elispy-modes
   '(emacs-lisp-mode ielm-mode)
@@ -302,5 +301,7 @@
     (when (fboundp 'aggressive-indent-indent-defun)
       (aggressive-indent-indent-defun))))
 
+
+(maybe-require-package 'cask-mode)
 
 (provide 'init-lisp)
