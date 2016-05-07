@@ -6,22 +6,40 @@
 (require 'company)
 (add-hook 'after-init-hook 'global-company-mode)
 
-
-(setq company-tooltip-limit 20)                      ; bigger popup window
-(setq company-idle-delay .05)                        ; decrease delay before autocompletion popup shows
+(setq company-tooltip-limit 10)                      ; bigger popup window
+(setq company-idle-delay .1)                        ; decrease delay before autocompletion popup shows
 (setq company-echo-delay 0)                          ; remove annoying blinking
-(setq company-begin-commands '(self-insert-command)) ; start autocompletion only after typing
+;; (setq company-begin-commands '(self-insert-command)) ; start autocompletion only after typing
 (setq company-minimum-prefix-length 1)
+
+;; ;; company delay until suggestions are shown
+;; (setq company-idle-delay 0.5)
+
+;; weight by frequency
+
+(setq company-transformers '(company-sort-by-backend-importance))
+
+;; Add yasnippet support for all company backends
+;; https://github.com/syl20bnr/spacemacs/pull/179
+(defvar company-mode/enable-yas t "Enable yasnippet for all backends.")
+
+(defun company-mode/backend-with-yas (backend)
+  (if (or (not company-mode/enable-yas) (and (listp backend)    (member 'company-yasnippet backend)))
+      backend
+    (append (if (consp backend) backend (list backend))
+            '(:with company-yasnippet))))
+
+(setq company-backends (mapcar #'company-mode/backend-with-yas company-backends))
 
 (add-hook 'prog-mode-hook 'turn-on-eldoc-mode)
 
 ;; ----------------- flycheck ----------------------------
 (require-package 'flycheck-pos-tip)
+(with-eval-after-load 'flycheck
+  (flycheck-pos-tip-mode))
 (eval-after-load 'flycheck
   '(custom-set-variables
     '(flycheck-display-errors-function #'flycheck-pos-tip-error-messages)))
-
-
 
 ;; ----------------- ggtags ----------------------------
 
@@ -42,7 +60,6 @@
 (add-hook 'prog-mode-hook
           (lambda ()
             (ggtags-mode t)))
-
 
 ;; ----------------- common ----------------------------
 (setq-default dotspacemacs-configuration-layers '(osx))
@@ -111,7 +128,10 @@
 
 ;; gotham theme
 (require-package 'gotham-theme)
+(setq-default custom-enabled-themes '(gotham))
 (load-theme 'gotham t)
+
+
 
 (require-package 'spacemacs-theme)
                                         ;(load-theme 'spacemacs-dark)
@@ -137,7 +157,16 @@
 (require 'linum+)
 (global-linum-mode t)
 (setq display-line-number-format "%3d||")
-(ac-linum-workaround)
+
+;; (defun ac-linum-workaround ()
+;;   "linum-mode tries to display the line numbers even for the
+;; completion menu. This workaround stops that annoying behavior."
+;;   (interactive)
+;;   (defadvice linum-update (around ac-linum-update-workaround activate)
+;;     (unless ac-completing
+;;       ad-do-it)))
+
+;;(ac-linum-workaround)
 
 ;; alpha
 (set-frame-parameter (selected-frame) 'alpha '(97 80))
@@ -615,13 +644,7 @@ that was stored with ska-point-to-register."
     (jump-to-register 8)
     (set-register 8 tmp)))
 
-(defun ac-linum-workaround ()
-  "linum-mode tries to display the line numbers even for the
-completion menu. This workaround stops that annoying behavior."
-  (interactive)
-  (defadvice linum-update (around ac-linum-update-workaround activate)
-    (unless ac-completing
-      ad-do-it)))
+
 (defun indent-buffer ()
   "Indent the whole buffer."
   (interactive)

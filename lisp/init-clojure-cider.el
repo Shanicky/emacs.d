@@ -1,7 +1,7 @@
 (require 'init-clojure)
 
 (when (maybe-require-package 'cider)
-<<<<<<< HEAD
+
   ;;  (require-package 'ac-cider)
 
   (setq nrepl-popup-stacktraces nil)
