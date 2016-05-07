@@ -145,11 +145,16 @@
   "Run `check-parens' when the current buffer is saved."
   (add-hook 'after-save-hook #'check-parens nil t))
 
+(defun sanityinc/disable-indent-guide ()
+  (when (bound-and-true-p indent-guide-mode)
+    (indent-guide-mode -1)))
+
 (defvar sanityinc/lispy-modes-hook
   '(rainbow-delimiters-mode
     enable-paredit-mode
     turn-on-eldoc-mode
     redshank-mode
+    sanityinc/disable-indent-guide
     sanityinc/enable-check-parens-on-save)
   "Hook run in all Lisp modes.")
 
@@ -253,12 +258,22 @@
 
 
 
-(when (maybe-require-package 'rainbow-mode)
-  (defun sanityinc/enable-rainbow-mode-if-theme ()
-    (when (string-match "\\(color-theme-\\|-theme\\.el\\)" (buffer-name))
-      (rainbow-mode 1)))
+;; Extras for theme editing
 
-  (add-hook 'emacs-lisp-mode-hook 'sanityinc/enable-rainbow-mode-if-theme))
+(defvar sanityinc/theme-mode-hook nil
+  "Hook triggered when editing a theme file.")
+
+(defun sanityinc/run-theme-mode-hooks-if-theme ()
+  "Run `sanityinc/theme-mode-hook' if this appears to a theme."
+  (when (string-match "\\(color-theme-\\|-theme\\.el\\)" (buffer-name))
+    (run-hooks 'sanityinc/theme-mode-hook)))
+
+(add-hook 'emacs-lisp-mode-hook 'sanityinc/run-theme-mode-hooks-if-theme)
+
+(when (maybe-require-package 'rainbow-mode)
+  (add-hook 'sanityinc/theme-mode-hook 'rainbow-mode))
+
+
 
 (when (maybe-require-package 'highlight-quoted)
   (add-hook 'emacs-lisp-mode-hook 'highlight-quoted-mode))
