@@ -6,7 +6,6 @@
 ;; Stop completion-at-point from popping up completion buffers so eagerly
 (setq completion-cycle-threshold 5)
 
-
 (when (maybe-require-package 'company)
   (add-hook 'after-init-hook 'global-company-mode)
   (after-load 'company

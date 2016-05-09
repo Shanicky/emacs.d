@@ -7,9 +7,9 @@
 (add-hook 'after-init-hook 'global-company-mode)
 
 (setq company-tooltip-limit 10)                      ; bigger popup window
-(setq company-idle-delay .1)                        ; decrease delay before autocompletion popup shows
+(setq company-idle-delay 0)                        ; decrease delay before autocompletion popup shows
 (setq company-echo-delay 0)                          ; remove annoying blinking
-;; (setq company-begin-commands '(self-insert-command)) ; start autocompletion only after typing
+;;(setq company-begin-commands '(self-insert-command)) ; start autocompletion only after typing
 (setq company-minimum-prefix-length 1)
 
 ;; ;; company delay until suggestions are shown
@@ -17,19 +17,21 @@
 
 ;; weight by frequency
 
-(setq company-transformers '(company-sort-by-backend-importance))
+;;(setq company-transformers '(company-sort-by-backend-importance))
+
 
 ;; Add yasnippet support for all company backends
 ;; https://github.com/syl20bnr/spacemacs/pull/179
 (defvar company-mode/enable-yas t "Enable yasnippet for all backends.")
-
 (defun company-mode/backend-with-yas (backend)
   (if (or (not company-mode/enable-yas) (and (listp backend)    (member 'company-yasnippet backend)))
       backend
     (append (if (consp backend) backend (list backend))
             '(:with company-yasnippet))))
 
-(setq company-backends (mapcar #'company-mode/backend-with-yas company-backends))
+(eval-after-load 'company
+  '(add-to-list 'company-backends 'company-files))
+
 
 (add-hook 'prog-mode-hook 'turn-on-eldoc-mode)
 
@@ -128,12 +130,12 @@
 
 ;; gotham theme
 (require-package 'gotham-theme)
-(setq-default custom-enabled-themes '(gotham))
-(load-theme 'gotham t)
+;;(setq-default custom-enabled-themes '(gotham))
+;;(load-theme 'gotham t)
 
+(require-package 'darktooth-theme)
+(load-theme 'darktooth t)
 
-
-(require-package 'spacemacs-theme)
                                         ;(load-theme 'spacemacs-dark)
 ;;(load-theme 'brin t)
 ;; (custom-theme-set-variables
@@ -196,8 +198,8 @@
 (popwin-mode t)
 (setq display-buffer-function 'popwin:display-buffer)
 ;; M-x anything
-(setq anything-samewindow nil)
-(push '("*anything*" :height 20) popwin:special-display-config)
+;; (setq anything-samewindow nil)
+;; (push '("*anything*" :height 20) popwin:special-display-config)
 
 ;; M-x dired-jump-other-window
 (push '(dired-mode :position top) popwin:special-display-config)
@@ -232,6 +234,8 @@
 (setq ag-highlight-search t)
 (setq ag-reuse-window t)
 (setq ag-reuse-buffers t)
+
+
 
 ;; ----------------- programming common ----------------------------
 
@@ -452,7 +456,8 @@
 (require 'company-go)
 
 (add-hook 'go-mode-hook (lambda ()
-                          (set (make-local-variable 'company-backends) '(company-go))
+                          (set (make-local-variable 'company-backends) (mapcar #'company-mode/backend-with-yas '(company-go)))
+                          ;;                          (set (make-local-variable 'company-backends) '(company-go))
                           (company-mode)))
 
 (require-package 'gotest)
@@ -767,5 +772,90 @@ that was stored with ska-point-to-register."
 
 (eval-after-load 'merlin-mode
   '(merlin-use "core"))
+
+(setq company-backends (mapcar #'company-mode/backend-with-yas company-backends))
+
+(require 'color)
+(let ((bg (face-attribute 'default :background)))
+  (custom-set-faces
+   `(company-tooltip ((t (:inherit default :background ,(color-lighten-name bg 2)))))
+   `(company-scrollbar-bg ((t (:background ,(color-lighten-name bg 10)))))
+   `(company-scrollbar-fg ((t (:background ,(color-lighten-name bg 5)))))
+   `(company-tooltip-selection ((t (:inherit font-lock-function-name-face))))
+   `(company-tooltip-common ((t (:inherit font-lock-constant-face))))))
+
+
+;; ----------------- helm ----------------------------
+(require-package 'helm)
+(require 'helm-config)
+
+(helm-mode 1)
+(helm-autoresize-mode 1)
+
+(when (executable-find "ack")
+  (setq helm-grep-default-command "ack -Hn --no-group --no-color %e %p %f"
+        helm-grep-default-recurse-command "ack -H --no-group --no-color %e %p %f"))
+
+(global-set-key (kbd "M-x") 'helm-M-x)
+(setq helm-M-x-fuzzy-match t)
+
+(global-set-key (kbd "M-y") 'helm-show-kill-ring)
+
+(global-set-key (kbd "C-x b") 'helm-mini)
+(setq helm-buffers-fuzzy-matching t
+      helm-recentf-fuzzy-match    t)
+
+(global-set-key (kbd "C-x C-f") 'helm-find-files)
+
+(setq helm-mode-fuzzy-match t)
+(setq helm-completion-in-region-fuzzy-match t)
+
+(setq helm-semantic-fuzzy-match t
+      helm-imenu-fuzzy-match    t)
+
+(require-package 'helm-projectile)
+(setq projectile-completion-system 'helm)
+(helm-projectile-on)
+
+(global-set-key (kbd "C-c h") 'helm-command-prefix)
+(global-unset-key (kbd "C-x c"))
+
+(define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to run persistent action
+(define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB works in terminal
+(define-key helm-map (kbd "C-z")  'helm-select-action) ; list actions using C-z
+
+(setq helm-locate-fuzzy-match t)
+(setq helm-apropos-fuzzy-match t)
+
+
+(global-set-key (kbd "C-c h o") 'helm-occur)
+(global-set-key (kbd "C-c h g") 'helm-google-suggest)
+
+(when (executable-find "curl")
+  (setq helm-google-suggest-use-curl-p t))
+
+(setq helm-split-window-in-side-p           t ; open helm buffer inside current window, not occupy whole other window
+      helm-move-to-line-cycle-in-source     t ; move to end or beginning of source when reaching top or bottom of source.
+      helm-ff-search-library-in-sexp        t ; search for library in `require' and `declare-function' sexp.
+      helm-scroll-amount                    8 ; scroll 8 lines other window using M-<next>/M-<prior>
+      helm-ff-file-name-history-use-recentf t)
+
+
+(add-to-list 'helm-sources-using-default-as-input 'helm-source-man-pages)
+
+(require 'helm-descbinds)
+(helm-descbinds-mode)
+
+(require-package 'helm-ag)
+
+(custom-set-variables
+ '(helm-ag-base-command "ag --nocolor --nogroup --ignore-case")
+ '(helm-ag-command-option "--all-text")
+ '(helm-ag-insert-at-point 'symbol))
+
+(global-set-key (kbd "M-?") 'helm-ag)
+
+;; windows
+;;(setq projectile-indexing-method 'alien)
 
 (provide 'init-local)
