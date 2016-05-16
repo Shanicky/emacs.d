@@ -68,13 +68,13 @@
 (global-subword-mode t)
 (global-hl-line-mode t)                              ;; highlight current line
 (auto-image-file-mode t)
-(icomplete-mode t)
+;; (icomplete-mode t)
 (blink-cursor-mode nil)
 
-(setq default-directory "~/workspace")
+(setq default-directory "~/workspace/")
 (add-to-list 'load-path "~/.emacs.d/site-lisp/")
 
-(define-key minibuffer-local-completion-map (kbd "SPC") 'minibuffer-complete-word)
+;;(define-key minibuffer-local-completion-map (kbd "SPC") 'minibuffer-complete-word)
 (setq frame-title-format "No sin is hidden to the soul")
 ;;(setq frame-title-format "No rest. No mercy. No matter world")
 (setq read-buffer-completion-ignore-case t)
@@ -91,28 +91,28 @@
 
 
 ;; ----------------- ido ----------------------------
-(require-package 'flx-ido)
-(require 'flx-ido)
-(ido-mode 1)
-(ido-everywhere 1)
-(flx-ido-mode 1)
-;; disable ido faces to see flx highlights.
-(setq ido-enable-flex-matching t)
-(setq ido-use-faces nil)
+;; (require-package 'flx-ido)
+;; (require 'flx-ido)
+;; (ido-mode 1)
+;; (ido-everywhere 1)
+;; (flx-ido-mode 1)
+;; ;; disable ido faces to see flx highlights.
+;; (setq ido-enable-flex-matching t)
+;; (setq ido-use-faces nil)
 
 
-(require-package 'ido-vertical-mode)
-(require 'ido-vertical-mode)
-(ido-vertical-mode t)
-(setq ido-decorations (quote ("\n=> " "" "\n   " "\n   ..." "[" "]" " [No match]" " [Matched]" " [Not readable]" " [Too big]" " [Confirm]")))
+;; (require-package 'ido-vertical-mode)
+;; (require 'ido-vertical-mode)
+;; (ido-vertical-mode t)
+;; (setq ido-decorations (quote ("\n=> " "" "\n   " "\n   ..." "[" "]" " [No match]" " [Matched]" " [Not readable]" " [Too big]" " [Confirm]")))
 
 
-(defun ido-disable-line-truncation () (set (make-local-variable 'truncate-lines) nil))
-(add-hook 'ido-minibuffer-setup-hook 'ido-disable-line-truncation)
-(defun ido-define-keys () ;; C-n/p is more intuitive in vertical layout
-  (define-key ido-completion-map (kbd "C-n") 'ido-next-match)
-  (define-key ido-completion-map (kbd "C-p") 'ido-prev-match))
-(add-hook 'ido-setup-hook 'ido-define-keys)
+;; (defun ido-disable-line-truncation () (set (make-local-variable 'truncate-lines) nil))
+;; (add-hook 'ido-minibuffer-setup-hook 'ido-disable-line-truncation)
+;; (defun ido-define-keys () ;; C-n/p is more intuitive in vertical layout
+;;   (define-key ido-completion-map (kbd "C-n") 'ido-next-match)
+;;   (define-key ido-completion-map (kbd "C-p") 'ido-prev-match))
+;; (add-hook 'ido-setup-hook 'ido-define-keys)
 
 ;; ----------------- editing ----------------------------
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
@@ -121,7 +121,7 @@
 (global-set-key (kbd "C--") 'er/contract-region)
 
 (require-package 'guide-key)
-(setq guide-key/guide-key-sequence '("C-x" "C-c" "C-x 4" "C-x 5" "C-c ;" "C-c ; f" "C-c ' f" "C-x n" "C-x C-r" "C-x r" "C-c p" "C-c !"))
+(setq guide-key/guide-key-sequence '("C-x" "C-c" "C-x 4" "C-x 5" "C-c ;" "C-c ; f" "C-c ' f" "C-x n" "C-x C-r" "C-x r" "C-c p" "C-c !" "C-c h"))
 
 
 ;; ----------------- appearance ----------------------------
@@ -130,14 +130,14 @@
 
 ;; gotham theme
 (require-package 'gotham-theme)
-;;(setq-default custom-enabled-themes '(gotham))
-;;(load-theme 'gotham t)
+(setq-default custom-enabled-themes '(gotham))
+(load-theme 'gotham t)
 
-(require-package 'darktooth-theme)
-(load-theme 'darktooth t)
+;; (require-package 'darktooth-theme)
+;; (load-theme 'darktooth t)
 
-                                        ;(load-theme 'spacemacs-dark)
-;;(load-theme 'brin t)
+;; (load-theme 'spacemacs-dark)
+;; (load-theme 'brin t)
 ;; (custom-theme-set-variables
 ;;  'brin
 ;;  '(linum-format " %i ")
@@ -511,8 +511,8 @@
   )
 
 (add-hook 'go-mode-hook 'my-go-mode)
-
 ;; ----------------- ruby ----------------------------
+
 (require-package 'rvm)
 (require-package 'ruby-additional)
 (require 'ruby-additional)
@@ -524,10 +524,10 @@
 (require 'ruby-tools)
 (require-package 'bundler)
 (require 'bundler)
-
+(ruby-block-mode nil)
 (defun my-ruby-mode ()
   (setq ruby-deep-indent-paren nil)
-  (ruby-block-mode nil)
+  (ruby-block-mode t)
   (rvm-activate-corresponding-ruby)
   (local-set-key (kbd "C-c i") 'inf-ruby)
   (local-set-key (kbd "C-c a") 'rvm-activate-corresponding-ruby)
@@ -806,6 +806,8 @@ that was stored with ska-point-to-register."
       helm-recentf-fuzzy-match    t)
 
 (global-set-key (kbd "C-x C-f") 'helm-find-files)
+(setq helm-ff-auto-update-initial-value t)
+
 
 (setq helm-mode-fuzzy-match t)
 (setq helm-completion-in-region-fuzzy-match t)
