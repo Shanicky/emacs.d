@@ -48,3 +48,4 @@ projectile.*
 /anaconda-mode
 /binary
 srecode-map.el
+/server

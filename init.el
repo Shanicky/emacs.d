@@ -1,4 +1,3 @@
-
 ;;; This file bootstraps the configuration, which is divided into
 ;;; a number of other files.
 
@@ -78,8 +77,6 @@
 (require 'init-darcs)
 (require 'init-git)
 (require 'init-github)
-
-(require 'init-projectile)
 
 (require 'init-compile)
 (require 'init-crontab)

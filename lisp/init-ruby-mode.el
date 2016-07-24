@@ -70,7 +70,6 @@
 (require-package 'yari)
 (defalias 'ri 'yari)
 
-
 
 (require-package 'goto-gem)
 
