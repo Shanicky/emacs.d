@@ -62,7 +62,15 @@
 (require 'init-flycheck)
 
 (require 'init-recentf)
+
 ;;(require 'init-ido)
+
+;; (require 'init-smex)
+;; ;; If you really prefer ido to ivy, change the comments below. I will
+;; ;; likely remove the ido config in due course, though.
+;; ;; (require 'init-ido)
+;; (require 'init-ivy)
+
 (require 'init-hippie-expand)
 (require 'init-company)
 (require 'init-windows)
@@ -78,6 +86,8 @@
 (require 'init-darcs)
 (require 'init-git)
 (require 'init-github)
+
+(require 'init-projectile)
 
 (require 'init-compile)
 (require 'init-crontab)
@@ -113,6 +123,7 @@
 
 (require 'init-misc)
 
+(require 'init-folding)
 (require 'init-dash)
 (require 'init-ledger)
 ;; Extra packages which don't require any configuration
@@ -143,8 +154,6 @@
 ;;----------------------------------------------------------------------------
 ;; Allow users to provide an optional "init-local" containing personal settings
 ;;----------------------------------------------------------------------------
-(when (file-exists-p (expand-file-name "init-local.el" user-emacs-directory))
-  (error "Please move init-local.el to ~/.emacs.d/lisp"))
 (require 'init-local nil t)
 
 

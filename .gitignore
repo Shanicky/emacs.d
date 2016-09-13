@@ -41,6 +41,7 @@ site-lisp/package/
 /ido.last
 /recentf
 /viper
+
 projectile-bookmarks.*
 projectile.*
 /semanticdb
@@ -48,3 +49,6 @@ projectile.*
 /anaconda-mode
 /binary
 srecode-map.el
+
+/projectile-bookmarks.eld
+/anaconda-mode/

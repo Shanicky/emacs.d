@@ -30,6 +30,8 @@
                                                 "http://melpa.org/packages/"
                                               "https://melpa.org/packages/")))
 
+;; NOTE: In case of MELPA problems, the official mirror URL is
+;; https://www.mirrorservice.org/sites/stable.melpa.org/packages/
 
 
 ;; If gpg cannot be found, signature checking will fail, so we
@@ -53,7 +55,10 @@ re-downloaded in order to locate PACKAGE."
   (if (package-installed-p package min-version)
       t
     (if (or (assoc package package-archive-contents) no-refresh)
-        (package-install package)
+        (if (boundp 'package-selected-packages)
+            ;; Record this as a package the user installed explicitly
+            (package-install package nil)
+          (package-install package))
       (progn
         (package-refresh-contents)
         (require-package package min-version t)))))
@@ -88,9 +93,10 @@ locate PACKAGE."
 
 (defun sanityinc/set-tabulated-list-column-width (col-name width)
   "Set any column with name COL-NAME to the given WIDTH."
-  (cl-loop for column across tabulated-list-format
-           when (string= col-name (car column))
-           do (setf (elt column 1) width)))
+  (when (> width (length col-name))
+    (cl-loop for column across tabulated-list-format
+             when (string= col-name (car column))
+             do (setf (elt column 1) width))))
 
 (defun sanityinc/maybe-widen-package-menu-columns ()
   "Widen some columns of the package menu table to avoid truncation."
