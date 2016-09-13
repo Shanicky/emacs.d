@@ -22,15 +22,15 @@
 
 ;; Add yasnippet support for all company backends
 ;; https://github.com/syl20bnr/spacemacs/pull/179
-(defvar company-mode/enable-yas t "Enable yasnippet for all backends.")
-(defun company-mode/backend-with-yas (backend)
-  (if (or (not company-mode/enable-yas) (and (listp backend)    (member 'company-yasnippet backend)))
-      backend
-    (append (if (consp backend) backend (list backend))
-            '(:with company-yasnippet))))
+;; (defvar company-mode/enable-yas t "Enable yasnippet for all backends.")
+;; (defun company-mode/backend-with-yas (backend)
+;;   (if (or (not company-mode/enable-yas) (and (listp backend)    (member 'company-yasnippet backend)))
+;;       backend
+;;     (append (if (consp backend) backend (list backend))
+;;             '(:with company-yasnippet))))
 
-(eval-after-load 'company
-  '(add-to-list 'company-backends 'company-files))
+;; (eval-after-load 'company
+;;   '(add-to-list 'company-backends 'company-files))
 
 
 (add-hook 'prog-mode-hook 'turn-on-eldoc-mode)
@@ -456,8 +456,8 @@
 (require 'company-go)
 
 (add-hook 'go-mode-hook (lambda ()
-                          (set (make-local-variable 'company-backends) (mapcar #'company-mode/backend-with-yas '(company-go)))
-                          ;;                          (set (make-local-variable 'company-backends) '(company-go))
+                          ;;                          (set (make-local-variable 'company-backends) (mapcar #'company-mode/backend-with-yas '(company-go)))
+                          (set (make-local-variable 'company-backends) '(company-go))
                           (company-mode)))
 
 (require-package 'gotest)
@@ -539,8 +539,10 @@
   (local-set-key (kbd "C-c r") 'ruby-compilation-this-buffer)
   )
 
-;; (eval-after-load 'company
-;;   '(add-to-list 'company-backends '(company-robe)))
+(eval-after-load 'company
+  '(add-to-list 'company-backends '(company-robe company-dabbrev-code)))
+
+
 
 ;;(add-hook 'ruby-mode-hook 'robe-mode)
 (add-hook 'ruby-mode-hook 'ruby-tools-mode)
@@ -773,7 +775,7 @@ that was stored with ska-point-to-register."
 (eval-after-load 'merlin-mode
   '(merlin-use "core"))
 
-(setq company-backends (mapcar #'company-mode/backend-with-yas company-backends))
+                                        ;(setq company-backends (mapcar #'company-mode/backend-with-yas company-backends))
 
 (require 'color)
 (let ((bg (face-attribute 'default :background)))
