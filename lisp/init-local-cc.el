@@ -31,7 +31,7 @@
 ;;"-lglog" "-lfolly"
 (setq irony-lang-compile-option-alist
       '((c++-mode . ("c++" "-std=c++11" "-lstdc++" "-lm" "-I/usr/local/include/" "-L/usr/local/lib"))
-        (c-mode . ("c" "-std=c99" "-lm" "-I/usr/local/include/" "-L/usr/local/lib"))
+        (c-mode . ("c" "-std=c11" "-lm" "-I/usr/local/include/" "-L/usr/local/lib"))
         (objc-mode . '("objective-c"))))
 
 (defun irony--lang-compile-option ()
@@ -47,8 +47,6 @@
 
 (require-package 'company-irony-c-headers)
 (require 'company-irony-c-headers)
-
-
 
 
 

@@ -16,6 +16,9 @@
 ;; cargo install rustfmt
 (require 'company-racer)
 
+(setq flycheck-disabled-checker 'rust-cargo)
+
+
 ;;(define-key rust-mode-map (kbd "TAB") #'company-indent-or-complete-common)
 
 (defun my-rust-mode()
